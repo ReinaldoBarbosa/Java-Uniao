@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import br.itb.project.uniaoVoluntaria.model.entity.Evento;
 import br.itb.project.uniaoVoluntaria.model.entity.Mensagem;
 import br.itb.project.uniaoVoluntaria.model.entity.Usuario;
 import br.itb.project.uniaoVoluntaria.model.repository.UsuarioRepository;
@@ -65,6 +66,8 @@ public class UsuarioController {
 		Usuario _usuario = usuarioService.create(usuario);
 		return new ResponseEntity<Usuario> (_usuario, HttpStatus.OK);
 	}
+	
+	
 
 	@PutMapping("update/{id}")
 	public ResponseEntity<?> update(
@@ -75,9 +78,18 @@ public class UsuarioController {
 		return new ResponseEntity<Usuario> (_usuario, HttpStatus.OK);
 
 	}
- 
 	
-	
+	@PutMapping("updateComImg/{id}")
+	public ResponseEntity<Usuario> updateComimagem(
+			@RequestParam(value = "file", required = false) MultipartFile file,
+			@PathVariable long id, @ModelAttribute("usuario") Usuario usuario) {
+
+		
+		Usuario _usuario = usuarioService.updateComImagem(id, file, usuario);
+		return new ResponseEntity<Usuario> (_usuario, HttpStatus.OK);
+
+	}
+ 	
 	
 	@PostMapping("/signin")
 	public ResponseEntity<?> signin(@RequestBody Usuario usuario) {

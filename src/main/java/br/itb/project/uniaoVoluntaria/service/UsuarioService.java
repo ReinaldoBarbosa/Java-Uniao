@@ -1,12 +1,15 @@
 package br.itb.project.uniaoVoluntaria.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import br.itb.project.uniaoVoluntaria.model.entity.Evento;
 import br.itb.project.uniaoVoluntaria.model.entity.Usuario;
 import br.itb.project.uniaoVoluntaria.model.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -50,6 +53,22 @@ public class UsuarioService {
 
 		return usuarioRepository.save(usuario);
 	}
+	
+	@Transactional
+	public Usuario createImage(MultipartFile file,Usuario usuario) {
+		
+		if (file != null && file.getSize() > 0) {
+			try {
+				usuario.setFotoPerfil(file.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			usuario.setFotoPerfil(null);
+		}
+		
+		return usuarioRepository.save(usuario);
+	}
 
 	@Transactional
 	public Usuario update(long id, Usuario usuario) {
@@ -74,6 +93,34 @@ public class UsuarioService {
 		// Se o usuário não for encontrado, retorna null ou lança uma exceção
 		return null;
 	}
+	
+	@Transactional
+	public Usuario updateComImagem(long id,MultipartFile file, Usuario usuario) {
+		Optional<Usuario> _usuario = usuarioRepository.findById(id);
+
+		if (_usuario.isPresent()) {
+			Usuario usuarioAtualizado = _usuario.get();
+
+			usuarioAtualizado.setNome(usuario.getNome());
+
+			usuarioAtualizado.setTelefone(usuario.getTelefone());
+	        
+	        // Atualiza a foto de perfil se o arquivo for enviado
+	        if (file != null && !file.isEmpty()) {
+	            try {
+	                usuarioAtualizado.setFotoPerfil(file.getBytes());
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	                throw new RuntimeException("Erro ao salvar a imagem", e);
+	            }
+	        }
+
+	        
+	        return usuarioRepository.save(usuarioAtualizado);
+	    }
+		return null; 
+	}
+
 
 	@Transactional
 	public Usuario signin(String email, String senha) {

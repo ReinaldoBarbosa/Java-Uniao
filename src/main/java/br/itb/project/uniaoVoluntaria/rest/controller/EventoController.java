@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.itb.project.uniaoVoluntaria.model.entity.Evento;
 import br.itb.project.uniaoVoluntaria.service.EventoService;
@@ -43,10 +45,11 @@ public class EventoController {
 	
 	@PostMapping("create/{email}")
 	public ResponseEntity<Evento> create (
-			@ModelAttribute Evento evento,@PathVariable String email   ){
+			@RequestParam(value = "file", required = false) MultipartFile file, 
+			@ModelAttribute("evento") Evento evento,@PathVariable String email   ){
 		
 		System.out.println(evento.getDataEvento());
-		Evento _evento = eventoService.create(evento, email);
+		Evento _evento = eventoService.create(file, evento, email);
 		return new ResponseEntity<Evento> (_evento, HttpStatus.OK);
 	}
 	
